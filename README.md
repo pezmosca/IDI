@@ -1,4 +1,4 @@
 # IDI
 Labs IDI
 
-Bloque 3 hasta LAB3 (último sin acabar)
+Bloque 1 hasta LAB3 (último sin acabar)
