@@ -21,6 +21,12 @@ void MyGLWidget::initializeGL ()
   glClearColor (0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
   carregaShaders();
   createBuffers();
+  scl = 0.5;
+  glUniform1f(varLoc, scl);
+  
+  glm::mat4 TG (1.0);
+  glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
+  
 }
 
 void MyGLWidget::paintGL ()
@@ -85,4 +91,45 @@ void MyGLWidget::carregaShaders()
 
   // Obtenim identificador per a l'atribut “vertex” del vertex shader
   vertexLoc = glGetAttribLocation (program->programId(), "vertex");
+  varLoc = glGetUniformLocation (program->programId(), "val");
+  transLoc = glGetUniformLocation (program->programId(), "TG");
+}
+
+void MyGLWidget::keyPressEvent(QKeyEvent *e) {
+    makeCurrent();
+    switch(e->key()) {
+        case Qt::Key_S:
+            scl += 0.1;
+            glUniform1f(varLoc, scl);
+            break;
+        case Qt::Key_D:
+            scl -= 0.1;
+            glUniform1f(varLoc, scl);
+            break;
+        case Qt::Key_Left:
+            modelTransform(glm::vec3(-0.5, 0, 0));
+            break;
+        case Qt::Key_Right:
+            modelTransform(glm::vec3(0.5, 0, 0));
+            break;
+        case Qt::Key_Up:
+            modelTransform(glm::vec3(0, 0.5, 0));
+            break;
+        case Qt::Key_Down:
+            modelTransform(glm::vec3(0, -0.5, 0));
+            break;
+        case Qt::Key_R:
+            modelTransform(glm::vec3(0, 0, 0));
+            break;
+        default: e->ignore();
+    }
+    
+    update();
+}
+
+void MyGLWidget::modelTransform(glm::vec3 value) {
+    glm::mat4 TG (1.0);
+    TG = glm::rotate(TG, float(M_PI/4), glm::vec3(0,0,1.0));
+    TG = glm::translate(TG, value);
+    glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
 }
