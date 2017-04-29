@@ -21,12 +21,9 @@ void MyGLWidget::initializeGL ()
   glClearColor (0.5, 0.7, 1.0, 1.0); // defineix color de fons (d'esborrat)
   carregaShaders();
   createBuffers();
-  scl = 0.5;
-  glUniform1f(varLoc, scl);
   
-  glm::mat4 TG (1.0);
-  glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
-  
+  glm::mat4 Proj (1.0);
+  glUniformMatrix4fv (projLoc, 1, GL_FALSE, &Proj[0][0]);
 }
 
 void MyGLWidget::paintGL ()
@@ -91,53 +88,18 @@ void MyGLWidget::carregaShaders()
 
   // Obtenim identificador per a l'atribut “vertex” del vertex shader
   vertexLoc = glGetAttribLocation (program->programId(), "vertex");
-  varLoc = glGetUniformLocation (program->programId(), "val");
-  transLoc = glGetUniformLocation (program->programId(), "TG");
+  projLoc = glGetUniformLocation (program->programId(), "proj");
+  viewLoc = glGetUniformLocation (program->programId(), "view");
 }
 
-void MyGLWidget::keyPressEvent(QKeyEvent *e) {
-    makeCurrent();
-    switch(e->key()) {
-        case Qt::Key_S:
-            /*scl += 0.1;
-            glUniform1f(varLoc, scl);*/
-            modelTransform2(glm::vec3(0.5, 0.5, 0));
-            break;
-        case Qt::Key_D:
-            /*scl -= 0.1;
-            glUniform1f(varLoc, scl);*/
-            modelTransform2(glm::vec3(-0.5, -0.5, 0));
-            break;
-        case Qt::Key_Left:
-            modelTransform(glm::vec3(-0.5, 0, 0));
-            break;
-        case Qt::Key_Right:
-            modelTransform(glm::vec3(0.5, 0, 0));
-            break;
-        case Qt::Key_Up:
-            modelTransform(glm::vec3(0, 0.5, 0));
-            break;
-        case Qt::Key_Down:
-            modelTransform(glm::vec3(0, -0.5, 0));
-            break;
-        case Qt::Key_R:
-            modelTransform(glm::vec3(0, 0, 0));
-            break;
-        default: e->ignore();
-    }
-    
-    update();
+void MyGLWidget::projectTransform () {
+    // glm::perspective (FOV en radians , ra window , znear, zfar)
+    glm::mat4 Proj = glm::perspective ((float)M_PI/2.0f, 1.0f, 0.4f, 3.0f);
+    glUniformMatrix4fv (projLoc, 1, GL_FALSE, &Proj[0][0]);
 }
 
-void MyGLWidget::modelTransform(glm::vec3 value) {
-    glm::mat4 TG (1.0);
-    TG = glm::rotate(TG, float(M_PI/4), glm::vec3(0,0,1.0));
-    TG = glm::translate(TG, value);
-    glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
-}
-
-void MyGLWidget::modelTransform2(glm::vec3 value) {
-    glm::mat4 TG (1.0);
-    TG = glm::scale(TG, value);
-    glUniformMatrix4fv (transLoc, 1, GL_FALSE, &TG[0][0]);
+void MyGLWidget::viewTransform() {
+    // glm::lookAt (OBS, VRP, UP)
+    glm::glm::mat4 View = glm::lookAt (glm:: vec3(0,0,1), glm:: vec3(0,0,0), glm:: vec3(0,1,0));
+    glUniformMatrix4fv (viewLoc, 1, GL_FALSE, &View[0][0]);
 }
