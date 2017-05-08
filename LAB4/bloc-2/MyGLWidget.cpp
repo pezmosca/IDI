@@ -31,21 +31,28 @@ void MyGLWidget::paintGL ()
   glClear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
   // Carreguem la transformació de model
-  modelTransform ();
   
   ini_camera();
 
   // Activem el VAO per a pintar la caseta 
   glBindVertexArray (VAO_Homer);
-
+  modelTransform ();
   // pintem
   glDrawArrays(GL_TRIANGLES, 0, m.faces().size()*3);
 
   glBindVertexArray (0);
   
   glBindVertexArray(VAO_Suelo);
+  modelTransform2 ();
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
   glBindVertexArray (0);
+}
+
+void MyGLWidget::modelTransform2 () 
+{
+  // Matriu de transformació de model
+  glm::mat4 transform (1.0f);
+  glUniformMatrix4fv(transLoc, 1, GL_FALSE, &transform[0][0]);
 }
 
 void MyGLWidget::modelTransform () 
@@ -173,7 +180,7 @@ void MyGLWidget::carregaShaders()
 
 void MyGLWidget::cargaModelo()
 {
-    m.load("/home/toni/Documentos/Uni/IDI/LABS/IDI/models/HomerProves.obj");
+    m.load("../../models/HomerProves.obj");
     glGenVertexArrays(1, &VAO_Homer);
     glBindVertexArray(VAO_Homer);
     

@@ -31,6 +31,7 @@ class MyGLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
     void createBuffers ();
     void carregaShaders ();
     void modelTransform ();
+    void modelTransform2 ();
     void projectTransform ();
     void viewTransform ();
     void ini_camera();
